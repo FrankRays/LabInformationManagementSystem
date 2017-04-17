@@ -1,0 +1,38 @@
+table {  font-size: 10pt;FONT-FAMILY: "";}
+.head {  font-size: 11pt; color: #FF3333; font-weight: bold}
+BODY {
+	FONT-FAMILY: ""; FONT-SIZE: 10pt; LINE-HEIGHT: 15pt; MARGIN-TOP: 0px; PADDING-TOP: 0px; SCROLLBAR-FACE-COLOR: #799ae1; SCROLLBAR-HIGHLIGHT-COLOR: #e7e7e7; SCROLLBAR-SHADOW-COLOR: #e7e7e7; SCROLLBAR-3DLIGHT-COLOR: #000000; SCROLLBAR-ARROW-COLOR: #ffffff; SCROLLBAR-TRACK-COLOR: #e7e7e7; SCROLLBAR-DARKSHADOW-COLOR: #000000
+}
+a:link {
+font-size: 12px;
+line-height: 22px;
+color: #004891;
+text-decoration: none;
+}
+a:visited {
+font-size: 12px;
+line-height: 22px;
+color: #004891;
+text-decoration: none;
+}
+a:hover {
+font-size: 12px;
+line-height: 22px;
+color: #FF0000;
+text-decoration: underline;
+}
+a:active {
+font-size: 12px;
+line-height: 22px;
+color:#FF0000;
+text-decoration: none;
+}
+
+.firstalt	{BACKGROUND-COLOR: #D0D0D0}
+
+.secondalt	{BACKGROUND-COLOR: #C5C5C5}
+.tblhead	{BACKGROUND-COLOR: #40364D; COLOR:#F5D300; FONT-SIZE:9pt}
+
+.tblborder	{BACKGROUND-COLOR: #51485F;	color: #CCCCCC; }
+
+.read_only {BACKGROUND-COLOR: #eeeeee}

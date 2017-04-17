@@ -1,0 +1,12 @@
+/*链接面号的样式*/
+.pagelink {
+	margin:0px 0px 0px 0px;
+	padding:0px 3px 0px 3px;
+	border:1px solid #7396bd;
+}
+/*下拉菜单或文本输入框样式*/
+#JumpSelect{
+		background:#FFFFFF;
+		border:1px solid #7396bd;
+		color:#000000;
+}

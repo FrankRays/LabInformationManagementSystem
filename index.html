@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="x-ua-compatible" content="ie=7" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="css/login.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript">AC_FL_RunContent = 0;</script>
+<script src="js/AC_RunActiveContent.js" language="javascript"></script>
+
+
+<SCRIPT type=text/javascript src="js/jquery-1.2.6.js"></SCRIPT> <!--Jquery原文档-->
+<SCRIPT type=text/javascript src="js/jquery.corner.js"></SCRIPT> <!--圆角插件-->
+<SCRIPT type=text/javascript>
+	$(function(){
+        $('div.demo').each(function() {
+             $(this).corner("12px");
+        });
+		
+		setTimeout(function() {
+            $("#float_div").slideUp(3000);
+			$("#close_btn").hide();
+        }, 20000 );
+		
+		$("#close_btn").click( function () {
+		 	$("#float_div").hide(); 
+			$(this).hide(); 
+		 }); 
+		
+	});
+</SCRIPT>
+
+
+<script>
+	function submitForm()  //按回车键提交表单
+	{
+		if (window.event.keyCode=='13')
+		{
+			form1.submit();
+		}
+
+	}
+</script>
+
+<title>实验课程安排系统</title>
+</head>
+
+<body onkeypress="submitForm();">
+
+
+
+<div id="login_BG">
+	<!--img src="images/login_BG.gif" /-->
+
+	<!-- saved from url=(0013)about:internet -->
+	<script language="javascript">
+		if (AC_FL_RunContent == 0) {
+			alert("此页需要 AC_RunActiveContent.js");
+		} else {
+			AC_FL_RunContent(
+				'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0',
+				'width','1003',
+				'height', '600',
+				'src', 'images/login_BG',
+				'quality', 'high',
+				'pluginspage', 'http://www.macromedia.com/go/getflashplayer',
+				'align', 'middle',
+				'play', 'true',
+				'loop', 'true',
+				'scale', 'showall',
+				'wmode', 'transparent',
+				'devicefont', 'false',
+				'id', 'images/login_BG',
+				'bgcolor', '#ffffff',
+				'name', 'images/login_BG',
+				'menu', 'true',
+				'allowFullScreen', 'false',
+				'allowScriptAccess','sameDomain',
+				'movie', 'images/login_BG',
+				'salign', ''
+				); //end AC code
+		}
+	</script>
+	<noscript>
+		<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="1003" height="600" id="animaton" align="middle">
+		<param name="allowScriptAccess" value="sameDomain" />
+		<param name="allowFullScreen" value="false" />
+		<param name="movie" value="animaton.swf" /><param name="quality" value="high" /><param name="wmode" value="transparent" />	<embed src="images/login_BG.swf" quality="high" bgcolor="#ffffff" width="1003" height="600" name="images/login_BG" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+		</object>
+	</noscript>
+</div>
+
+
+
+<div id="main"  style="background-color:#FFFFFF;" style="width:260px !important; height:230px;"> <!--圆角DIV块208-->
+	<table width="208" border="0" align="center" cellpadding="5" cellspacing="0" id="middle_table" style="table-layout:fixed; magin-bottom:20px;">
+		<form name="form1" id="form1" method="post" action="login_do.php">
+	  <tr>
+		<td bgcolor="#F4F4F4" class="title" width="220px">+ LOGIN</td>
+	  </tr>
+	  <tr>
+		<td class="grey">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="计算机科学与技术教学中心实验课程申请流程.docx">系统说明</a></td>
+	  </tr>
+	  <tr>
+		<td class="grey"><img src="images/warning.gif" width="16" height="16" align="absmiddle"> 请输入登陆的用户和密码&nbsp;<a href="register.php">申请账号</a></td>
+	  </tr>
+	  <tr>
+		<td class="title">Username</td>
+	  </tr>
+	  <tr>
+		<td><input name="u_lname" type="text" id="u_lname"  class="username" size="30"  value="" style="width:200px;"></td>
+	  </tr>
+	  <tr>
+		<td></td>
+	  </tr>
+	  <tr>
+		<td class="title">Password</td>
+	  </tr>
+	  <tr>
+		<td><input name="u_password" type="password" id="u_password" class="password" size="30" value="" style="width:200px;"></td>
+	  </tr>
+	  <tr>
+		<td align="center"><img src="images/loginin.gif" width="45" height="21" onclick="form1.submit();"></td>
+		<!--<td align="center"><input type="button" style="background-image:url(images/loginin.gif); width:45px; height:21px; border:1px solid #CCC;" onclick="form1.submit();" ></td>-->
+	  </tr>
+	  </form>
+	</table>
+</div>
+
+<!--<div style=" z-index:200; width:950px;height:450px; position:fixed; margin-top:110px; margin-left:20px;" id="float_div">
+<iframe id="right_frame" name="iframe_right" style="height: 100%; visibility: inherit; width: 100%; z-index: 1" scrolling="auto" frameborder="0" src="data_backup/index_result_all.php"></iframe>
+</div> -->
+
+<!--<div style=" z-index:201; width:950px;height:20px; position:fixed; margin-top:120px; margin-left:35px;" >
+<a href="#" id="close_btn" style="font-size:12px">关闭此浮动窗口</a>
+</div> -->
+
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+body{
+background:#CFDFEF;
+}
+
+#formwrapper {
+    width:700px;
+    margin:15px auto;
+    padding:10px 25px 0px 25px;
+    text-align:left;
+    border:1px #1E7ACE solid;
+	background:#FFFFFF;
+}
+
+fieldset {
+    padding:5px;
+    margin-top:5px;
+    border:1px solid #1E7ACE;
+    background:#FFFFFF;
+}
+
+fieldset legend {
+    color:#1E7ACE;
+    font-weight:bold;
+    padding:3px 20px 3px 20px;
+    border:1px solid #1E7ACE;    
+    background:#FFFFFF;
+}
