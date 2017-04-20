@@ -194,7 +194,10 @@ window.onerror = ResumeError;
 		/*
 		$sql = "SELECT DISTINCT apply.a_rname , apply.a_cname , apply.a_sid AS 实验编号 , apply.a_sname AS 实验项目 , apply.a_sweek AS 周次 , apply.a_sdate AS 星期 , apply.a_sclass AS 节次 , apply.a_room AS 实验室安排 ,room.r_admin AS 实验室负责人 FROM `apply` left outer join `room` on room.r_name=apply.a_cdirection WHERE apply.a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND apply.a_rname='$teachername' AND apply.a_cname='$coursename'  ORDER BY `a_cname`, `a_sid` ,`a_sweek`";
 		 */
-		 $sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		//2017-04-20新增查询年级、专业和班级三个字段并修改排序顺序
+		//$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目 FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目, a_grade AS 年级, a_major AS 专业, a_class AS 班级  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY a_cname, a_grade, a_major, a_class, a_sid";
+		
 		$result = mysql_query ( $sql )
 		  or die ( "不能查询指定的数据库表：" . mysql_error() );
 		//print_r($sql); 
@@ -212,6 +215,7 @@ window.onerror = ResumeError;
 		//2009-12-6
 		echo "<th>教师</th>\n";
 		echo "<th>课程</th>\n";
+		echo "<th>班级</th>\n";//2017-04-20新增班级,用于区分不同课程
 		echo "<th>实验编号</th>\n";
 		echo "<th>实验项目</th>\n";
 		echo "<th>周次</th>\n";
@@ -223,6 +227,11 @@ window.onerror = ResumeError;
 		echo "</tr>\n";
 		$row = mysql_fetch_row ( $result );//获取影响多行中的一行
 		$hebing = 0;//用于老师名称显示合并（判断）
+		
+		//2017-04-20用于区分不同课程
+		$course = $row[5].$row[6].$row[7];
+		
+		
 		for ( $i = 0; $i < $row_num; $i++ ) 
 		{
 			$sql_tid = sprintf("SELECT a_sweek AS 周次,a_sdate AS 星期,a_sclass AS 节次,a_room AS 实验安排 FROM time WHERE s_id='%d' AND a_id='%d' ORDER BY `a_sweek`",$row[3],$row[0]);
@@ -230,8 +239,8 @@ window.onerror = ResumeError;
 			$result_tid = mysql_query ( $sql_tid ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 			$row_num_tid = mysql_num_rows($result_tid);			//获取影响行的数目
 			$row_tid = mysql_fetch_array($result_tid);			//获取多行数据的一行
-			for($num_tid=0;$num_tid<$row_num_tid;$num_tid++) //$row_num_tid
-			{
+			//for($num_tid=0;$num_tid<$row_num_tid;$num_tid++) //$row_num_tid
+			//{
 			echo "<tr bgcolor=\"#FFFFFF\">\n";
 		  
 			//echo "<td align=\"center\" id=\"id1\">$teachername</td>";
@@ -243,8 +252,13 @@ window.onerror = ResumeError;
 			if ($hebing==0) echo "<td rowspan='$rowspan'>$teachername</td>";//根据老师名称、课程名称
 			///输出登记表
 			$hebing++;//用于老师名称显示合并（判断）
-			for($j=2;$j<mysql_num_fields($result);$j++)
+			$columns = mysql_num_fields($result) - 3;
+			for($j=2;$j<$columns;$j++)
 				{
+					//2017-04-20显示班级
+					if ($j == 3) {
+						echo "<td align='center'>${course}</td>";
+					}
 				echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
 				}
 			//输出时间段
@@ -262,8 +276,30 @@ window.onerror = ResumeError;
 		
 			echo "</tr>\n";
 			$row_tid = mysql_fetch_array($result_tid);			//获取多行数据的一行
-			}
+			//}
 			$row = mysql_fetch_row ( $result );
+			//2017-04-20用于区分课程
+			if ($course != $row[5].$row[6].$row[7]) {
+				/*
+				echo "<tr bgcolor=\"#FFFFFF\">\n";
+				if ($hebing==0) echo "<td rowspan='$rowspan'>$teachername</td>";//根据老师名称、课程名称
+				$hebing++;//用于老师名称显示合并（判断）
+				for($j=2;$j<$columns;$j++) {
+					//2017-04-20显示班级
+					if ($j == 3) {
+						echo "<td align='center'></td>";
+					}
+					echo "<td align=\"center\" ></td>\n";
+				}
+				for($m=0;$m<4;$m++) {
+					echo "<td align=\"center\" ></td>\n";
+				}
+				echo "<td align=\"center\" >";
+				echo "</td>\n";
+				echo "</tr>\n";
+				*/
+			}
+			$course = $row[5].$row[6].$row[7];
 		}
 		echo "</table>\n";
 		echo "<br /><br />";
@@ -291,6 +327,7 @@ window.onerror = ResumeError;
 
 <!--单元格竖合并输出BEGIN-->
   <script   language="JavaScript">   
+  
   //var   textnum   =   1;   
   function   coalesce_row(obj,s,n,text){   
   var   text   
@@ -315,6 +352,7 @@ window.onerror = ResumeError;
   coalesce_row(document.all.id3,1,0,'null');
   coalesce_row(document.all.id4,1,0,'null');
   //coalesce_row(document.all.id8,1,0,'null');
+ 
   <?php
   	/*暂时不使用合并
   	for ($i=1; $i<20; $i++)  //将记录结果默认为50行，待改进...
