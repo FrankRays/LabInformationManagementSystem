@@ -177,7 +177,7 @@ window.onerror = ResumeError;
 		//修改为一下的查询格式（2009年8月13日14时23分59秒）	
 		/*------多加一个实验教材字段a_book---------*/
 		//$sql = sprintf("SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a_id AS 操作 FROM apply1 WHERE %s='%s' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class ",$search_condition,$search_content);
-		//2017-04-20通过左联表查询，增加查询房间字段,删除操作
+		//2017-04-20通过左联表查询，增加查询房间字段,移除原来查看详细信息操作
 		$sql = sprintf("SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a.a_id, a_room AS 房间 FROM apply1 AS a LEFT JOIN time AS t ON a.a_id = t.a_id WHERE %s='%s' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class ",$search_condition,$search_content);
 		
 		//ORDER BY `a_rname`, `a_cname`,`a_sid`
@@ -274,16 +274,24 @@ window.onerror = ResumeError;
 		}
 		echo "</tr>\n";
 		
+		$isTheSameTask = '';//2017-04-20判断是否为同一个实验
+		
 		$row = mysql_fetch_array ( $result );    //取得查询出来的多行结果中的一行
 		
 		//不同课程
 		$differentCourse = $row[0].$row[1].$row[7].$row[8].$row[9];
 		include("course_register_search_function.php");
 		
+		
 		//利用双重循环打印出表项的内容(注意{$row[$j]}是具体哪一个表项的显示)
-		for ( $i = 0; $i < $row_num; $i++ ) 
-			{
+		for ( $z = 0; $z < $row_num; $z++ ) {
+			//2017-04-20判断是否为同一个实验
+			if ($isTheSameTask != $row[4].$row[5]) {
+				
+				$isTheSameTask = $row[4].$row[5];
+				
 				$sql_tid = sprintf("SELECT a_sweek AS 周次, a_sdate AS 星期, a_sclass AS 节次 FROM time WHERE a_id='%d' ORDER BY `a_sweek` , `a_sdate`",$row[16]);
+				
 				//printf($sql_tid);die();
 				$result_tid = mysql_query($sql_tid) or die("不能查询指定的数据库表：" . mysql_error());
 				$num_tid = mysql_num_rows($result_tid);
@@ -299,77 +307,70 @@ window.onerror = ResumeError;
 				$differentCourse = $row[0].$row[1].$row[7].$row[8].$row[9];
 				
 				
-				for($num=0;$num<$num_tid;$num++)
-					{ 
-						echo "<tr>\n"; 
-					for ( $j = 0; $j < 7; $j++ ) //登记表前半部分输出
-						{
-							if($j==4 or $j==5 or $j==6)//实验编号、实验项目名称、实验类型合并
-							{
-								if($cont==0)
+				for($num=0;$num<$num_tid;$num++){ 
+					echo "<tr>\n"; 
+					//登记表前半部分输出
+					for ( $j = 0; $j < 7; $j++ ) {
+						//实验编号、实验项目名称、实验类型合并
+						if($j==4 or $j==5 or $j==6){
+							if($cont==0)
 								echo "<td align=\"center\" id=\"id$j\"  rowspan='$num_tid'>{$row[$j]}</td>\n";
-							}
-							else
-								echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
-						}
-					for($j=8;$j<11;$j++)//时间段输出
-						{
+						} else
+							echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
+					}
+					//时间段输出
+					for($j=8;$j<11;$j++) {
 						$row_j=$j-8;
 						echo "<td align=\"center\" id=\"id$j\">{$row_tid[$row_j]}</td>\n";
-						}
+					}
 
-
-						//
-						
-					for ( $j = 7; $j < mysql_num_fields($result)-1; $j++ ) //登记表后半部分输出
-						{
-							if($j==7 or $j==8 or $j==9 or $j==10)//年级、班级、专业、人数合并
-							{
-								if($cont==0)
+					//登记表后半部分输出
+					for ( $j = 7; $j < mysql_num_fields($result)-1; $j++ ) {
+						//年级、班级、专业、人数合并
+						if($j==7 or $j==8 or $j==9 or $j==10){
+							if($cont==0)
 								echo "<td align=\"center\" id=\"id$j\"  rowspan='$num_tid'>{$row[$j]}</td>\n";
-							}
-							else
-							{
-							if($j==11 or $j==12)//对计划学时特别处理
-							{
-								if($cont==0)//当变量为0的时候则合并单元格
-								{
-								echo "<td align=\"center\" id=\"id$j\" rowspan='$num_tid'>{$row[$j]}</td>\n";
-								
+						} else {
+							//对计划学时特别处理
+							if($j==11 or $j==12) {
+								//当变量为0的时候则合并单元格
+								if($cont==0) {
+									echo "<td align=\"center\" id=\"id$j\" rowspan='$num_tid'>{$row[$j]}</td>\n";
 								}
 
-							}
-							//2017-04-20如果不是a_id列则输出
-							else if ($j != 16)
+							} else if ($j != 16)
+								//2017-04-20如果不是a_id列则输出
 								echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
-							}
-							
 						}
-						$cont++;
+							
+					}
+					$cont++;
 			
-			//单独添加"修改链接"	
-			//注意下面直接用了超链接显式传参数的格式(用了&符号区分多个变量),在接收页要用$_GET接收
-			//2017-04-20通过左联表查询，增加查询房间字段,删除操作
-			/*
-			if($usercode =='2')//针对负责人查看详细信息
-			{
-				echo "<td align=\"center\"  id='id16'>
-		        <img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
-			</td>\n";
-			}
-			else  //其他$row[17]表示登记表的编号
-			{
-				echo "<td align=\"center\" id='id16'>
-				<img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
-				</td>\n";
-			}
-			*/
-			//输出房间号
-			echo "<td align='center'>${row[17]}</td>";
-			//<a href=\"course_register_search_single_result.php?a_id=$row[7]\">详细信息</a>
+					//单独添加"修改链接"	
+					//注意下面直接用了超链接显式传参数的格式(用了&符号区分多个变量),在接收页要用$_GET接收
+					//2017-04-20注释掉  通过左联表查询，增加查询房间字段,删除操作
+					/*
+					if($usercode =='2')//针对负责人查看详细信息
+					{
+						echo "<td align=\"center\"  id='id16'>
+						<img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
+					</td>\n";
+					}
+					else  //其他$row[17]表示登记表的编号
+					{
+						echo "<td align=\"center\" id='id16'>
+						<img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
+						</td>\n";
+					}
+					*/
+					//输出房间号
+					echo "<td align='center'>${row[17]}</td>";
+					//<a href=\"course_register_search_single_result.php?a_id=$row[7]\">详细信息</a>
 			
-		    echo "</tr>\n";
-			$row_tid = mysql_fetch_array($result_tid);//读取多行结果中的一行
+					echo "</tr>\n";
+			
+					$row_tid = mysql_fetch_array($result_tid);//读取多行结果中的一行
+				}
 			}
 		  $row = mysql_fetch_array ( $result );
 		}
