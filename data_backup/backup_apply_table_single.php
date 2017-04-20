@@ -150,7 +150,12 @@ window.onerror = ResumeError;
 
 
 
-	@$sql="SELECT DISTINCT a_cname,a_major,a_grade FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	//@$sql="SELECT DISTINCT a_cname,a_major,a_grade FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	//2017-04-20区分条件增加班级
+	@$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	 
+	echo $sql;
+	
 	$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 	$course_num = mysql_num_rows($result);
 	for($i=0; $i<$course_num ; $i++)
@@ -159,7 +164,7 @@ window.onerror = ResumeError;
 		$course_arr[] = $row['a_cname'];   //课程名称
 		$major_arr[] = $row['a_major'];  //专业
 		$grade_arr[] = $row['a_grade'];  //年级
-		
+		$class_arr[] = $row['a_class']; //班级
 	}
 
 
@@ -170,9 +175,9 @@ window.onerror = ResumeError;
 /*作者：陈灿*/
 
 
-	function courseRegisterTable($teachername,$coursename,$majorname,$grade,$valid_time_range_begin_date,$valid_time_range_end_date)
+	function courseRegisterTable($teachername,$coursename,$majorname,$grade,$valid_time_range_begin_date,$valid_time_range_end_date, $class)
 	{ 
-		$sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别,a_sbook AS 实验教材, a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename' AND a_major='$majorname' AND a_grade='$grade' ORDER BY  'a_grade' ASC,'a_cname','a_major','a_sid'";
+		$sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别,a_sbook AS 实验教材, a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename' AND a_major='$majorname' AND a_grade='$grade' AND a_class='$class' ORDER BY  'a_grade' ASC,'a_cname','a_major','a_sid'";
 		$result = mysql_query ( $sql )
 		  or die ( "不能查询指定的数据库表：" . mysql_error() );
 		  
@@ -289,7 +294,7 @@ window.onerror = ResumeError;
 	
 		for($i=0; $i<$course_num ; $i++)
 		{
-			courseRegisterTable($teachername,$course_arr[$i],$major_arr[$i],$grade_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date);
+			courseRegisterTable($teachername,$course_arr[$i],$major_arr[$i],$grade_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date,$class_arr[$i]);
 		}
 	
 	?>

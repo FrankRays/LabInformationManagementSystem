@@ -204,7 +204,7 @@ window.onerror = ResumeError;
 		$sql = "SELECT DISTINCT apply.a_rname , apply.a_cname , apply.a_sid AS 实验编号 , apply.a_sname AS 实验项目 , apply.a_sweek AS 周次 , apply.a_sdate AS 星期 , apply.a_sclass AS 节次 , apply.a_room AS 实验室安排 ,room.r_admin AS 实验室负责人 FROM `apply` left outer join `room` on room.r_name=apply.a_cdirection WHERE apply.a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND apply.a_rname='$teachername' AND apply.a_cname='$coursename'  ORDER BY `a_cname`, `a_sid` ,`a_sweek`";
 		 */
 		//2017-04-20新增查询年级、专业和班级三个字段并修改排序顺序
-		$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目 FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目 FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename' AND a_grade='$grade' AND a_major='$major' AND a_class='$class'  ORDER BY `a_cname`,`a_sid`";
 		
 		
 		$result = mysql_query ( $sql )
