@@ -152,8 +152,10 @@ window.onerror = ResumeError;
 	}
 
 
-
-	$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	
+	//$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
+	
 	$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 	$course_num = mysql_num_rows($result);
 	//echo $course_num;
@@ -161,6 +163,9 @@ window.onerror = ResumeError;
 	{
 		$row = mysql_fetch_array ( $result );
 		$course_arr[] = $row['a_cname'];
+		$grade_arr[] = $row['a_grade'];
+		$major_arr[] = $row['a_major'];
+		$class_arr[] = $row['a_class'];
 		
 	}
 
@@ -188,15 +193,19 @@ window.onerror = ResumeError;
 /*传出：反馈信息表*/
 /*作者：陈灿*///
 
-
-	function feedbackTable($teachername,$coursename,$valid_time_range_begin_date,$valid_time_range_end_date)
+	/**
+	* 2017-04-20增加$grade(年级), $major(专业), $class(班级)三个参数
+	*/
+	function feedbackTable($teachername,$coursename,$valid_time_range_begin_date,$valid_time_range_end_date, $grade, $major, $class)
 	{
+		
+		$course = $grade.$major.$class;
 		/*
 		$sql = "SELECT DISTINCT apply.a_rname , apply.a_cname , apply.a_sid AS 实验编号 , apply.a_sname AS 实验项目 , apply.a_sweek AS 周次 , apply.a_sdate AS 星期 , apply.a_sclass AS 节次 , apply.a_room AS 实验室安排 ,room.r_admin AS 实验室负责人 FROM `apply` left outer join `room` on room.r_name=apply.a_cdirection WHERE apply.a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND apply.a_rname='$teachername' AND apply.a_cname='$coursename'  ORDER BY `a_cname`, `a_sid` ,`a_sweek`";
 		 */
 		//2017-04-20新增查询年级、专业和班级三个字段并修改排序顺序
-		//$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目 FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
-		$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目, a_grade AS 年级, a_major AS 专业, a_class AS 班级  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY a_cname, a_grade, a_major, a_class, a_sid";
+		$sql = "SELECT a_id, a_rname , a_cname , a_sid AS 实验编号 , a_sname AS 实验项目 FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		
 		
 		$result = mysql_query ( $sql )
 		  or die ( "不能查询指定的数据库表：" . mysql_error() );
@@ -228,8 +237,7 @@ window.onerror = ResumeError;
 		$row = mysql_fetch_row ( $result );//获取影响多行中的一行
 		$hebing = 0;//用于老师名称显示合并（判断）
 		
-		//2017-04-20用于区分不同课程
-		$course = $row[5].$row[6].$row[7];
+
 		
 		
 		for ( $i = 0; $i < $row_num; $i++ ) 
@@ -252,13 +260,14 @@ window.onerror = ResumeError;
 			if ($hebing==0) echo "<td rowspan='$rowspan'>$teachername</td>";//根据老师名称、课程名称
 			///输出登记表
 			$hebing++;//用于老师名称显示合并（判断）
-			$columns = mysql_num_fields($result) - 3;
+			$columns = mysql_num_fields($result);
 			for($j=2;$j<$columns;$j++)
 				{
 					//2017-04-20显示班级
 					if ($j == 3) {
 						echo "<td align='center'>${course}</td>";
 					}
+					
 				echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
 				}
 			//输出时间段
@@ -278,28 +287,6 @@ window.onerror = ResumeError;
 			$row_tid = mysql_fetch_array($result_tid);			//获取多行数据的一行
 			//}
 			$row = mysql_fetch_row ( $result );
-			//2017-04-20用于区分课程
-			if ($course != $row[5].$row[6].$row[7]) {
-				/*
-				echo "<tr bgcolor=\"#FFFFFF\">\n";
-				if ($hebing==0) echo "<td rowspan='$rowspan'>$teachername</td>";//根据老师名称、课程名称
-				$hebing++;//用于老师名称显示合并（判断）
-				for($j=2;$j<$columns;$j++) {
-					//2017-04-20显示班级
-					if ($j == 3) {
-						echo "<td align='center'></td>";
-					}
-					echo "<td align=\"center\" ></td>\n";
-				}
-				for($m=0;$m<4;$m++) {
-					echo "<td align=\"center\" ></td>\n";
-				}
-				echo "<td align=\"center\" >";
-				echo "</td>\n";
-				echo "</tr>\n";
-				*/
-			}
-			$course = $row[5].$row[6].$row[7];
 		}
 		echo "</table>\n";
 		echo "<br /><br />";
@@ -318,7 +305,7 @@ window.onerror = ResumeError;
 
 	for($i=0; $i<$course_num ; $i++)
 	{
-		feedbackTable($teachername,$course_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date);
+		feedbackTable($teachername,$course_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date, $grade_arr[$i], $major_arr[$i], $class_arr[$i]);
 	}
 
 ?>
