@@ -176,13 +176,17 @@ window.onerror = ResumeError;
 
 		//修改为一下的查询格式（2009年8月13日14时23分59秒）	
 		/*------多加一个实验教材字段a_book---------*/
-		$sql = sprintf("SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a_id AS 操作 FROM apply1 WHERE %s='%s' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class ",$search_condition,$search_content);
+		//$sql = sprintf("SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a_id AS 操作 FROM apply1 WHERE %s='%s' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class ",$search_condition,$search_content);
+		//2017-04-20通过左联表查询，增加查询房间字段,删除操作
+		$sql = sprintf("SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a.a_id, a_room AS 房间 FROM apply1 AS a LEFT JOIN time AS t ON a.a_id = t.a_id WHERE %s='%s' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class ",$search_condition,$search_content);
+		
 		//ORDER BY `a_rname`, `a_cname`,`a_sid`
 		//针对负责人的查询语句（2009年3月14日22时27分19秒分组修改）		
 		if($usercode =='2')
 		{
-			
-			$sql = "SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a_id AS 查看 FROM apply1 WHERE a_cdirection IN (SELECT r_name FROM room WHERE r_admin LIKE '%".$search_content."%') AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class";
+			//2017-04-20通过左联表查询，增加查询房间字段,删除操作
+			//$sql = "SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a_id AS 查看 FROM apply1 WHERE a_cdirection IN (SELECT r_name FROM room WHERE r_admin LIKE '%".$search_content."%') AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class";
+			$sql = "SELECT a_cname AS 课程名称, a_rname AS 教师名称 , a_ctype AS 课程类别 , a_sbook AS 实验教材 , a_sid AS 实验编号,a_sname AS 实验项目名称, a_stype AS 实验类型  , a_grade AS 年级 , a_major AS 专业 , a_class AS 班别 , a_people AS 人数 ,a_learntime AS 计划学时, a_stime AS 实际学时 , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求 , a.a_id, a_room AS 房间 FROM apply1 AS a LEFT JOIN time AS t ON a.a_id = t.a_id WHERE a_cdirection IN (SELECT r_name FROM room WHERE r_admin LIKE '%".$search_content."%') AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_cname, a_grade, a_major, a_class";
 			// ORDER BY `a_rname`, `a_cname` , `a_sid`
 		}
 
@@ -261,8 +265,12 @@ window.onerror = ResumeError;
 		for($i=7;$i<$col_num;$i++)//登记表后面字段
 		{
 			$meta = mysql_fetch_field ( $result ); 
-			$title[$i] = $meta;			
-			echo "<th>{$meta->name}</th>\n";
+			//2017-04-20如果不是a_id列则输出
+			if ($meta->name != 'a_id') {
+				$title[$i] = $meta;			
+				echo "<th>{$meta->name}</th>\n";
+			}
+			
 		}
 		echo "</tr>\n";
 		
@@ -331,7 +339,8 @@ window.onerror = ResumeError;
 								}
 
 							}
-							else
+							//2017-04-20如果不是a_id列则输出
+							else if ($j != 16)
 								echo "<td align=\"center\" id=\"id$j\">{$row[$j]}</td>\n";
 							}
 							
@@ -340,7 +349,8 @@ window.onerror = ResumeError;
 			
 			//单独添加"修改链接"	
 			//注意下面直接用了超链接显式传参数的格式(用了&符号区分多个变量),在接收页要用$_GET接收
-			//负责人$row[7]表示登记表的编号，其他$row[16]表示登记表的编号			
+			//2017-04-20通过左联表查询，增加查询房间字段,删除操作
+			/*
 			if($usercode =='2')//针对负责人查看详细信息
 			{
 				echo "<td align=\"center\"  id='id16'>
@@ -349,10 +359,13 @@ window.onerror = ResumeError;
 			}
 			else  //其他$row[17]表示登记表的编号
 			{
-			echo "<td align=\"center\" id='id16'>
-		    <img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
-			</td>\n";
+				echo "<td align=\"center\" id='id16'>
+				<img src=\"../images/search.gif\"  style=\"cursor:hand;\" onClick='location.href=\"course_register_search_single_result.php?a_id=$row[16]&search_condition=".$search_condition."&search_content=".urlencode($search_content)."\"' title='查看详细信息'/>
+				</td>\n";
 			}
+			*/
+			//输出房间号
+			echo "<td align='center'>${row[17]}</td>";
 			//<a href=\"course_register_search_single_result.php?a_id=$row[7]\">详细信息</a>
 			
 		    echo "</tr>\n";

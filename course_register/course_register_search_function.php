@@ -15,7 +15,9 @@ function showHeader($title, $col_num) {
 		echo "<th>节次</th>\n";
 		for($i=7;$i<$col_num;$i++)//登记表后面字段
 		{
-			echo "<th>{$title[$i]->name}</th>\n";
+			//2017-04-20如果不是a_id列则输出
+			if ($title[$i]->name != '')
+				echo "<th>{$title[$i]->name}</th>\n";
 		}
 		echo "</tr>\n";
 		
