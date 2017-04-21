@@ -70,10 +70,16 @@ window.onerror = ResumeError;
 /*传出：单个实验课信息登记表*/
 /*作者：陈灿*/
 
-
-	function courseRegisterTable($teachername,$coursename,$valid_time_range_begin_date,$valid_time_range_end_date)
+	/**
+	* 2017-04-21添加参数
+	*/
+	function courseRegisterTable($teachername,$coursename,$valid_time_range_begin_date,$valid_time_range_end_date, $grade, $major, $class)
 	{
-		 $sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别, a_sbook AS 实验教材, a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		
+		$course = $grade.$major.$class;
+		
+		 $sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别, a_sbook AS 实验教材, a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename' AND a_grade='$grade' AND a_major='$major' AND a_class='$class'  ORDER BY `a_cname`,`a_sid`";
+		
 		$result = mysql_query ( $sql )
 		  or die ( "不能查询指定的数据库表：" . mysql_error() );
 		  
@@ -190,24 +196,34 @@ window.onerror = ResumeError;
 
 	<?php
 	
+		echo $teacher_num;
+	
 		for($j=0 ; $j<$teacher_num; $j++)
 		{
 			//
 			$teachername = $teacher_arr[$j];
-			$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取课程信息
+			//$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取课程信息
+			//2017-04-21增加查询项 a_grade, a_major, a_class
+			$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取课程信息
 			$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 			$course_num = mysql_num_rows($result);
 			for($i=0; $i<$course_num ; $i++)
 			{
 				$row = mysql_fetch_array ( $result );
 				$course_arr[] = $row['a_cname'];
+				$grade_arr[] = $row['a_grade'];
+				$major_arr[] = $row['a_major'];
+				$class_arr[] = $row['a_class'];
 			}
 			for($i=0; $i<$course_num ; $i++)
 			{
-				courseRegisterTable($teachername,$course_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date);
+				courseRegisterTable($teachername,$course_arr[$i],$valid_time_range_begin_date,$valid_time_range_end_date, $grade_arr[$i], $major_arr[$i], $class_arr[$i]);
 			}
 			//放结果的数组
 			unset($course_arr);
+			unset($grade_arr);
+			unset($major_arr);
+			unset($class_arr);
 		}
 		
 	?>
