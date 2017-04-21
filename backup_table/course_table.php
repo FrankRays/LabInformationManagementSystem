@@ -108,7 +108,8 @@ window.onerror = ResumeError;
 	else//其他用户
 	{
 		//获得本学期所有填写的登记表课程名称
-		$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定课程信息
+		//2017-04-21添加按老师名字排序
+		$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY a_rname";  //统计指定课程信息
 		$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 		$course_num = mysql_num_rows($result);
 		//echo $course_num;
@@ -154,7 +155,7 @@ window.onerror = ResumeError;
 				$sql_like .= "a_room LIKE '%".$room."%' OR ";
 			}
 			$sql_like = substr($sql_like,0,strlen($sql_like)-4);//去掉最后四个字符，即OR和两个空格
-				$sql = "SELECT a_id, a_cname , a_ctype , a_sbook , a_sname , a_stype , a_learntime , a_stime , a_grade , a_major , a_class , a_people , a_rname ,a_cdirection  FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE  ".$sql_like.") AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";
+				$sql = "SELECT a_id, a_cname , a_ctype , a_sbook , a_sname , a_stype , a_learntime , a_stime , a_grade , a_major , a_class , a_people , a_rname ,a_cdirection  FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE  ".$sql_like.") AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}' ORDER BY  `a_rname`, a_cname, a_ctype, a_grade, a_major, a_class";
 				$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 				$row_num = mysql_num_rows($result);
 				$col_num = mysql_num_fields( $result );
@@ -178,7 +179,9 @@ window.onerror = ResumeError;
 			for($i=0; $i<$course_num ; $i++)
 			{
 			$coursename = $course_arr[$i];
-			$sql = "SELECT a_id, a_cname , a_ctype , a_sbook , a_sname , a_stype , a_learntime , a_stime , a_grade , a_major , a_class , a_people , a_rname ,a_cdirection  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_cname='$coursename'  ORDER BY  `a_rname` , `a_sid`";
+			
+			$sql = "SELECT a_id, a_cname , a_ctype , a_sbook , a_sname , a_stype , a_learntime , a_stime , a_grade , a_major , a_class , a_people , a_rname ,a_cdirection  FROM `apply1`  WHERE a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_cname='$coursename'  ORDER BY  `a_rname`, a_cname, a_ctype, a_grade, a_major, a_class ";
+			
 			$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 			$row_num = mysql_num_rows($result);
 			$col_num = mysql_num_fields( $result );

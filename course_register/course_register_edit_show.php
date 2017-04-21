@@ -176,6 +176,7 @@ function chooseall(element)
 	.btn{
 		display: inline-block;
 		padding: 6px 12px;
+		margin-left: 10px;
 		margin-bottom: 0;
 		font-size: 14px;
 		font-weight: 400;

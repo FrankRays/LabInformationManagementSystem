@@ -196,7 +196,6 @@ window.onerror = ResumeError;
 
 	<?php
 	
-		echo $teacher_num;
 	
 		for($j=0 ; $j<$teacher_num; $j++)
 		{

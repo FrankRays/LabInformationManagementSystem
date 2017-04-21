@@ -44,7 +44,7 @@ function show($result, $row_num, $usercode, $search_condition, $search_content){
 					echo "<input type=\"submit\" name=\"sub\" value=\"批量修改\">";
 					echo "</form>";
 					
-					echo "<form method='post' style='margin-left:80px;margin-top: -20px;' action='course_register_edit_show_add.php'>
+					echo "<form method='post' style='margin-left:80px;margin-top: -22px;' action='course_register_edit_show_add.php'>
 					<input name='a_rname' type='hidden' value='${a_rname1}'/>
 					<input name='a_cname' type='hidden' value='${a_cname1}'/>
 					<input name='a_major' type='hidden' value='${a_major1}'/>

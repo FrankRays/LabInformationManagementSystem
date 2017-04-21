@@ -163,10 +163,13 @@ window.onerror = ResumeError;
 /*作者：陈灿*/
 
 
-	function courseRegisterTable($teachername,$coursename,$admin_name,$valid_time_range_begin_date,$valid_time_range_end_date)
+	/**
+	* 增加参数
+	*/
+	function courseRegisterTable($teachername,$coursename,$admin_name,$valid_time_range_begin_date,$valid_time_range_end_date, $grade, $major, $class)
 	{
 		//a_cdirection IN (SELECT r_name FROM room WHERE r_admin LIKE '%".$admin_name."%') AND
-		$sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别, a_sbook , a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE  a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename'  ORDER BY `a_cname`,`a_sid`";
+		$sql = "SELECT a_id, a_rname , a_cname , a_ctype AS 课程类别, a_sbook , a_sid AS 实验编号 , a_sname AS 实验项目 , a_stype, a_grade, a_major, a_class, a_people, a_learntime , a_stime , a_resources AS 耗材需求 , a_system AS 系统需求 , a_software AS 软件需求  FROM `apply1`  WHERE  a_date BETWEEN '$valid_time_range_begin_date' AND '$valid_time_range_end_date' AND a_rname='$teachername' AND a_cname='$coursename' AND a_grade='$grade' AND a_major='$major' AND a_class='$class' ORDER BY `a_cname`,`a_sid`";
 		$result = mysql_query ( $sql )
 		  or die ( "不能查询指定的数据库表：" . mysql_error() );
 		  
@@ -292,14 +295,22 @@ window.onerror = ResumeError;
 			{
 				for($r_num=0;$r_num<count($room_arr);$r_num++)
 				{
-					$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
+					//$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
+					//2017-04-21添加查询项
+					$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
 					//print_r($sql);
+					//echo $sql;
+					
 					$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 					$course_num = mysql_num_rows($result);		
 					for($i=0; $i<$course_num ; $i++)
 					{
 						$row = mysql_fetch_array ( $result );
 						$course_arr[] = $row['a_cname'];
+						$grade_arr[] = $row['a_grade'];
+						$major_arr[] = $row['a_major'];
+						$class_arr[] = $row['a_class'];
+						$course[] = $row['a_cname'].$row['a_grade'].$row['a_major'].$row['a_class'];
 					}
 				}
 			}
@@ -307,26 +318,39 @@ window.onerror = ResumeError;
 			{
 				for($r_num=0;$r_num<count($room_arr);$r_num++)
 				{
-				    $sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
+				    //$sql="SELECT DISTINCT a_cname FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
+					//2017-04-21添加查询项
+					$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_id IN (SELECT a_id FROM `time` WHERE a_room LIKE '%".$room_arr[$r_num]."%') AND a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //获取教师信息
 					//print_r($sql);
+					
 					$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 					$course_num = mysql_num_rows($result);		
 					for($i=0; $i<$course_num ; $i++)
 					{
 						$row = mysql_fetch_array ( $result );
 						$course_arr[] = $row['a_cname'];
+						$grade_arr[] = $row['a_grade'];
+						$major_arr[] = $row['a_major'];
+						$class_arr[] = $row['a_class'];
+						$course[] = $row['a_cname'].$row['a_grade'].$row['a_major'].$row['a_class'];
 					}
 				}
 			}
 			//对数组的各个值进行比较，只保留不同项(用数组函数array_values，array_unique)
-			$course_arr = array_values(array_unique($course_arr));
-			for($i=0; $i<count($course_arr) ; $i++)
+			$course = array_values(array_unique($course));
+			for($i=0; $i<count($course) ; $i++)
 			{
+				
 			//函数功能：根据老师名称、课程名称、负责人查找相关的信息表$course_arr[$i]
-			courseRegisterTable($teachername,$course_arr[$i],$admin_name,$valid_time_range_begin_date,$valid_time_range_end_date);
+			courseRegisterTable($teachername,$course_arr[$i],$admin_name,$valid_time_range_begin_date,$valid_time_range_end_date, $grade_arr[$i], $major_arr[$i], $class_arr[$i]);
 			}
 			//放结果的数组
+			
 			unset($course_arr);
+			unset($grade_arr);
+			unset($major_arr);
+			unset($class_arr);
+			unset($course);
 		}
 		
 	?>

@@ -153,8 +153,6 @@ window.onerror = ResumeError;
 	//@$sql="SELECT DISTINCT a_cname,a_major,a_grade FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
 	//2017-04-20区分条件增加班级
 	@$sql="SELECT DISTINCT a_cname, a_grade, a_major, a_class FROM `apply1` WHERE a_rname='$teachername' AND a_date BETWEEN '{$valid_time_range_begin_date}' AND '{$valid_time_range_end_date}'";  //统计指定教师的课程信息
-	 
-	echo $sql;
 	
 	$result = mysql_query ( $sql ) or die ( "不能查询指定的数据库表：" . mysql_error() );
 	$course_num = mysql_num_rows($result);
